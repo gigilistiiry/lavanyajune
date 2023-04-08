@@ -32,7 +32,203 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
+  }
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.wrappPagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+
+.containerHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.titleForm {
+  margin-left: 4px !important;
+  font-size: 20px;
+  font-weight: bold;
+  color: rgba(0, 0, 0);
+  margin: 0px -15px 40px;
+}
+
+.containerButton {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.btnSimpan {
+  margin-right: 20px !important;
+}
+
+.form {
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.8);
+  padding: 10px;
+  border: 1px dashed grey;
+  border-radius: 10px;
+}
+
+.wrappLabel {
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 5px;
+  font-size: 1rem;
+}
+
+.wrappField {
+  padding-bottom: 20px !important;
+  width: 100%;
+}
+
+.wrappFieldPraBedah {
+  padding-bottom: 30px !important;
+}
+
+.wrappFieldAnastesi {
+  padding-bottom: 12px !important;
+}
+
+.wrappFieldJenisPembedahan {
+  padding-bottom: 45px !important;
+}
+
+.wrappFieldArea {
+  padding-bottom: 20px !important;
+  margin-top: 20px !important;
+}
+
+.wrappTimePicker {
+  padding-bottom: 21px !important;
+  width: 100%;
+}
+
+.wrappRangeTimeOperasi {
+  width: 50% !important;
+}
+
+.wrappPA {
+  margin-bottom: 12px !important;
+}
+
+.MuiFormHelperText-root {
+  text-align: right !important;
+}
+
+.menuHide {
+  display: none;
+}
+
+.burgerWhite {
+  z-index: 3;
+  color: #f9f9f9 !important;
+  position: absolute !important;
+  right: 30px;
+  top: 30px;
+}
+
+.menu {
+  z-index: 2;
+  opacity: 1;
+  position: fixed;
+  right: 0;
+  width: 400px;
+  height: 100%;
+  background-color: #07030a;
+  animation: menuIn 1.375s;
+}
+
+.menu nav:hover div {
+  opacity: 0.25;
+}
+
+.menu nav div:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.menu nav {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 90px;
+}
+
+.menu nav div {
+  position: relative;
+  color: #f9f9f9;
+  font-size: 28px;
+  padding: 20px 0;
+  width: 300px;
+  text-decoration: none;
+  animation: appear 0.25s backwards;
+}
+
+.menu nav div,
+.menu nav div::before,
+.menu nav div::after {
+  transition: 0.4s;
+}
+
+.menu nav div::before,
+.menu nav div::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 10px;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+}
+
+.menu nav div::before {
+  opacity: 0;
+  background: rgb(255 255 255 / 20%);
+}
+
+.menu nav div::after {
+  transform: scaleX(0);
+  transform-origin: 0% 50%;
+  background: #f7f7f7;
+  opacity: 1;
+}
+
+.menu nav div:hover::before {
+  opacity: 1;
+}
+
+.menu nav div:hover::after {
+  transform: scaleX(1);
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    translate: -30px 0;
+  }
+
+  100% {
+    opacity: 1 !important;
+  }
+}
+
+@keyframes menuIn {
+  0% {
+    clip-path: ellipse(0% 10% at 200% 50%);
+  }
+
+  100% {
+    clip-path: ellipse(120% 120% at 0% 40%);
   }
 }
