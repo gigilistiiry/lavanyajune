@@ -13,10 +13,35 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { CheckCircle, Close, Delete, FormatListBulleted, Help, Menu, PersonAddAlt, Search } from '@mui/icons-material';
+import { Cancel, CheckCircle, Close, Delete, FormatListBulleted, Grading, Help, Menu, PersonAddAlt, Search } from '@mui/icons-material';
 import moment from 'moment';
+import PreviewFrom from './previewPasien/previewFrom';
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  PDFViewer,
+} from "@react-pdf/renderer";
 
 const db = StartFirebase();
+
+const page = {
+  backgroundColor: "white",
+  color: "black",
+  fontSize: 12
+}
+
+const viewer = {
+  width: '1000px',
+  height: window.innerHeight,
+}
+
+const section = {
+  margin: 10,
+  padding: 10,
+}
 
 const styleModal = {
   position: 'absolute',
@@ -32,6 +57,24 @@ const styleModal = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center'
+};
+
+const styleModalForm = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 1000,
+  height: 500,
+  bgcolor: 'background.paper',
+  border: '1px solid grey',
+  borderRadius: '8px',
+  boxShadow: 24,
+  p: 4,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  flexDirection: 'column',
 };
 
 class Form extends Component {
@@ -54,6 +97,7 @@ class Form extends Component {
     perawat: '',
     dxPraBedah: '',
     dxPascaBedah: '',
+    dxTindakan: '',
     macamPembedahan: '',
     jenisPembedahan: '',
     dieksisi: '',
@@ -72,14 +116,18 @@ class Form extends Component {
     loading: false,
     modalDelete: false,
     pasienDelete: [],
-    dataICD10: [],
-    dataICD9: [],
+    dataDxPrimary: [],
+    dataDxSecondary: [],
+    dataDxTindakan: [],
     search: '',
-    preliminaryData: []
+    preliminaryData: [],
+    showPreview: false,
+    idData: ''
   }
 
   componentDidMount() {
-    this._handleFillDataICD10();
+    this._handleFilldataDxPrimary();
+    this._handleFilldataDxSecondary();
     this._handleFillDataICD9();
     const dbRef = ref(db, 'pasien')
     this.setState({
@@ -112,18 +160,25 @@ class Form extends Component {
     this.setState({ dataTable: searchPatient });
   }
 
-  _handleFillDataICD10 = async () => {
+  _handleFilldataDxPrimary = async () => {
     const { dxPraBedah } = this.state;
     const response10 = await fetch(`https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?sf=code,name&authenticity_token=&terms=${dxPraBedah}`);
     const data10 = await response10?.json();
-    this.setState({ dataICD10: data10 });
+    this.setState({ dataDxPrimary: data10 });
+  }
+
+  _handleFilldataDxSecondary = async () => {
+    const { dxPascaBedah } = this.state;
+    const response10 = await fetch(`https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?sf=code,name&authenticity_token=&terms=${dxPascaBedah}`);
+    const data10 = await response10?.json();
+    this.setState({ dataDxSecondary: data10 });
   }
 
   _handleFillDataICD9 = async () => {
-    const { dxPascaBedah } = this.state;
-    const response9 = await fetch(`https://clinicaltables.nlm.nih.gov/api/icd9cm_dx/v3/search?authenticity_token=&terms=${dxPascaBedah}`);
+    const { dxTindakan } = this.state;
+    const response9 = await fetch(`https://clinicaltables.nlm.nih.gov/api/icd9cm_dx/v3/search?authenticity_token=&terms=${dxTindakan}`);
     const data9 = await response9?.json();
-    this.setState({ dataICD9: data9 });
+    this.setState({ dataDxTindakan: data9 });
   }
 
   getAllData = () => {
@@ -138,6 +193,7 @@ class Form extends Component {
       perawat: this.state.perawat,
       dxPraBedah: this.state.dxPraBedah,
       dxPascaBedah: this.state.dxPascaBedah,
+      dxTindakan: this.state.dxTindakan,
       dateOperasi: this.state.dateOperasi,
       macamPembedahan: this.state.macamPembedahan,
       jenisPembedahan: this.state.jenisPembedahan,
@@ -170,6 +226,7 @@ class Form extends Component {
       perawat: data.perawat,
       dxPraBedah: data.dxPraBedah,
       dxPascaBedah: data.dxPascaBedah,
+      dxTindakan: data.dxTindakan,
       dateOperasi: data.dateOperasi,
       macamPembedahan: data.macamPembedahan,
       jenisPembedahan: data.jenisPembedahan,
@@ -198,16 +255,24 @@ class Form extends Component {
     this.setState({ dxPraBedah: val });
   }
 
+  _handleChangeValueTindakan = (e, val) => {
+    this.setState({ dxTindakan: val });
+  }
+
   _handleChangeValuePascaBedah = (e, val) => {
     this.setState({ dxPascaBedah: val });
   }
 
   _changeValPraBedah = (e) => {
-    this.setState({ dxPraBedah: e.target.value }, () => this._handleFillDataICD10());
+    this.setState({ dxPraBedah: e.target.value }, () => this._handleFilldataDxPrimary());
   }
 
   _changeValPascaBedah = (e) => {
-    this.setState({ dxPascaBedah: e.target.value }, () => this._handleFillDataICD9());
+    this.setState({ dxPascaBedah: e.target.value }, () => this._handleFilldataDxSecondary());
+  }
+
+  _changeValTindakan = (e) => {
+    this.setState({ dxTindakan: e.target.value }, () => this._handleFillDataICD9());
   }
 
   _handleRemovePasien = (type, noRM) => (e) => {
@@ -303,6 +368,7 @@ class Form extends Component {
         perawat: '',
         dxPraBedah: '',
         dxPascaBedah: '',
+        dxTindakan: '',
         macamPembedahan: '',
         jenisPembedahan: '',
         dieksisi: '',
@@ -335,6 +401,7 @@ class Form extends Component {
         perawat: '',
         dxPraBedah: '',
         dxPascaBedah: '',
+        dxTindakan: '',
         macamPembedahan: '',
         jenisPembedahan: '',
         dieksisi: '',
@@ -358,6 +425,15 @@ class Form extends Component {
   _handleChange = (e) => {
     if (e.target.name === 'laporanOperasi' && e.target.value.length > 100) return;
     this.setState({ [e.target.name]: e.target.value })
+  }
+
+  _handleShowHTML = (id) => (e) => {
+    e.preventDefault();
+    this.setState({ showPreview: !this.state.showPreview, idData: id });
+  }
+
+  _handleClosePreview = () => {
+    this.setState({ showPreview: false, idData: '' });
   }
 
   _renderLeft = () => {
@@ -397,6 +473,22 @@ class Form extends Component {
             <FormControlLabel value="Perempuan" control={<Radio />} label="Perempuan" />
           </RadioGroup>
         </FormControl>
+        <TextField
+          className='wrappField'
+          id="outlined-select-currency"
+          select
+          label="Ruang Rawat Inap"
+          fullWidth
+          name='ruangan'
+          onChange={this._handleChangeValue}
+          variant="outlined"
+        >
+          {['Perwira', 'Rajawali', 'Gelatik'].map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
         <TextField
           className='wrappField'
           id="outlined-select-currency"
@@ -449,22 +541,6 @@ class Form extends Component {
           className='wrappField'
           id="outlined-select-currency"
           select
-          label="Ruang Rawat Inap"
-          fullWidth
-          name='ruangan'
-          onChange={this._handleChangeValue}
-          variant="outlined"
-        >
-          {['Perwira', 'Rajawali', 'Gelatik'].map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          className='wrappField'
-          id="outlined-select-currency"
-          select
           label="Perawat/ Instrumen"
           fullWidth
           name='perawat'
@@ -482,10 +558,10 @@ class Form extends Component {
           disablePortal
           id="combo-box-demo"
           onChange={this._handleChangeValuePraBedah}
-          options={this.state.dataICD10 && this.state.dataICD10[3]}
+          options={this.state.dataDxPrimary && this.state.dataDxPrimary[3]}
           fullWidth
           renderInput={(params) =>
-            <TextField {...params} label="Diagnosa Pra Bedah" onChange={this._changeValPraBedah} />
+            <TextField {...params} label="Diagnosa Primary" onChange={this._changeValPraBedah} />
           }
         />
         <Autocomplete
@@ -493,10 +569,21 @@ class Form extends Component {
           disablePortal
           id="combo-box-demo"
           onChange={this._handleChangeValuePascaBedah}
-          options={this.state.dataICD9 && this.state.dataICD9[3]}
+          options={this.state.dataDxSecondary && this.state.dataDxSecondary[3]}
           fullWidth
           renderInput={(params) =>
-            <TextField {...params} label="Diagnosa Pasca Bedah" onChange={this._changeValPascaBedah} />
+            <TextField {...params} label="Diagnosa Secondary" onChange={this._changeValPascaBedah} />
+          }
+        />
+        <Autocomplete
+          className='wrappFieldTindakan'
+          disablePortal
+          id="combo-box-demo"
+          onChange={this._handleChangeValueTindakan}
+          options={this.state.dataDxTindakan && this.state.dataDxTindakan[3]}
+          fullWidth
+          renderInput={(params) =>
+            <TextField {...params} label="Diagnosa Tindakan" onChange={this._changeValTindakan} />
           }
         />
         <TextField
@@ -516,7 +603,7 @@ class Form extends Component {
           ))}
         </TextField>
         <TextField
-          className='wrappFieldJenisPembedahan'
+          className='wrappField'
           id="outlined-select-currency"
           select
           label="Jenis Pembedahan"
@@ -539,13 +626,6 @@ class Form extends Component {
           name='dieksisi'
           variant="outlined"
         />
-      </Grid>
-    );
-  }
-
-  _renderRight = () => {
-    return (
-      <Grid item xs={4}>
         <FormControl className='wrappPA'>
           <FormLabel>Dikirim Untuk Pemeriksaan PA</FormLabel>
           <RadioGroup row onChange={this._handleChangesendPA} value={this.state.sendPA}>
@@ -553,6 +633,13 @@ class Form extends Component {
             <FormControlLabel value="no" control={<Radio />} label="Tidak" />
           </RadioGroup>
         </FormControl>
+      </Grid>
+    );
+  }
+
+  _renderRight = () => {
+    return (
+      <Grid item xs={4}>
         <TextField
           className='wrappFieldAnastesi'
           id="outlined-select-currency"
@@ -611,7 +698,7 @@ class Form extends Component {
           multiline
           name='laporanOperasi'
           onChange={this._handleChange}
-          rows={5.5}
+          rows={11}
           variant="outlined"
           type='area'
           value={this.state.laporanOperasi}
@@ -668,7 +755,8 @@ class Form extends Component {
                 this.state.jenisPembedahan === '' || this.state.dieksisi === '' ||
                 this.state.anastesi === '' || this.state.jamMulai === '' ||
                 this.state.jamAkhir === '' || this.state.durasiOperasi?.jam === '' ||
-                this.state.durasiOperasi?.menit === '' || this.state.laporanOperasi === '' ? true : false
+                this.state.durasiOperasi?.menit === '' || this.state.laporanOperasi === '' ||
+                this.state.dxTindakan === '' ? true : false
             }
             className='btnSimpan'
             onClick={this._handleSaveData()}
@@ -740,21 +828,24 @@ class Form extends Component {
                     <TableCell>{val?.dxPascaBedah}</TableCell>
                     <TableCell>{val?.ruangan}</TableCell>
                     <TableCell>
-                      <IconButton onClick={this._handleDelete(val?.noRM)}><Delete /></IconButton>
+                      <div style={{ display: 'flex' }}>
+                        <IconButton onClick={this._handleShowHTML(val?.noRM)}><Grading /></IconButton>
+                        <IconButton onClick={this._handleDelete(val?.noRM)}><Delete /></IconButton>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
               })}
             </TableBody>
           </Table>
-        </TableContainer>
+        </TableContainer >
         {/* <Pagination
           className='wrappPagination'
           count={Math.ceil(this.state.dataTable.length / this.state.limit)}
           page={this.state.page}
           onChange={this._handleChangeRowsPerPage}
         /> */}
-      </div>
+      </div >
     );
   }
 
@@ -830,12 +921,41 @@ class Form extends Component {
     );
   }
 
+  _renderModalForm = () => {
+    let dataPasien = (this.state.dataTable || []).filter(val => val?.noRM === this.state.idData);
+    return (
+      <Modal open={this.state.showPreview}>
+        <Box sx={styleModalForm}>
+          <IconButton style={{
+            position: 'absolute',
+            top: -10,
+            right: -10,
+          }} onClick={this._handleClosePreview}>
+            <Cancel fontSize='large' />
+          </IconButton>
+          <React.Fragment>
+            <PDFViewer style={viewer}>
+              <Document>
+                <Page size="A4" style={page}>
+                  <View style={section}>
+                    <PreviewFrom data={dataPasien} />
+                  </View>
+                </Page>
+              </Document>
+            </PDFViewer>
+          </React.Fragment>
+        </Box>
+      </Modal>
+    );
+  }
+
   render() {
     const { menuListPatien } = this.state;
     return (
       <React.Fragment>
         {this._renderMenu()}
         <div style={{ padding: '30px' }}>
+          {this._renderModalForm()}
           {this._renderModalSubmit()}
           {this._renderModalDelete()}
           {menuListPatien ? this._renderMenuListPatient() : this._renderMenuAddPatient()}
