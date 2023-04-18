@@ -77,6 +77,14 @@ const styleModalForm = {
   flexDirection: 'column',
 };
 
+const listDokterObgyn = [
+  'dr. Ani Supriatni, SpOG', 'dr. Anita Rachmawati, SpOG (K-FER)', 'dr. Anna Fachruriyah, SpOG',
+  'dr. Asri Kurnia Dewi, SpOG', 'dr. Dina Erasvina, SpOG', 'dr. Herry Aktyar Matondang, SpOG',
+  'dr. Lina Karlina, SpOG', 'dr. M Alamsyah, SpOG, KMF(KIC)', 'dr. Raden Ahyar Nugraha, SpOG',
+  'dr. Rina Eka Puspitasari, SpOG', 'dr. Risa Risfandi SpOG', 'dr. Umar Seno W., SpOG (K)-KFM., M.Kes',
+  'dr. Yudo Siswo Utomo, SpOG'
+];
+
 class Form extends Component {
   state = {
     dataTable: [],
@@ -483,7 +491,7 @@ class Form extends Component {
           onChange={this._handleChangeValue}
           variant="outlined"
         >
-          {['Perwira', 'Rajawali', 'Gelatik'].map((option) => (
+          {['Rio', 'Riu', 'Reg', 'Wing Sel'].map((option) => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>
@@ -499,7 +507,7 @@ class Form extends Component {
           onChange={this._handleChangeValue}
           variant="outlined"
         >
-          {['dr Tom SpBU', 'dr Jery SpBU'].map((option) => (
+          {listDokterObgyn.map((option) => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>
@@ -515,7 +523,7 @@ class Form extends Component {
           onChange={this._handleChangeValue}
           variant="outlined"
         >
-          {['dr Mickey SpAn', 'dr Donald SpAn'].map((option) => (
+          {['dr. Lutfhi R. Tambora, SpAn'].map((option) => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>
@@ -547,7 +555,7 @@ class Form extends Component {
           onChange={this._handleChangeValue}
           variant="outlined"
         >
-          {['Udin', 'Idin'].map((option) => (
+          {['Mega Lestiary, S.Kep.,Ners', 'Tantan Permadi, A.Md.Kep', 'Eki Nurdiansyah, A.Md.Kep'].map((option) => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>
@@ -809,8 +817,8 @@ class Form extends Component {
                 <TableCell><b>TANGGAL OPERASI</b></TableCell>
                 <TableCell><b>DOKTER BEDAH</b></TableCell>
                 <TableCell><b>DOKTER ANASTESI</b></TableCell>
-                <TableCell><b>DIAGNOSA AWAL</b></TableCell>
-                <TableCell><b>DIAGNOSA AKHIR</b></TableCell>
+                <TableCell><b>DIAGNOSA PRIMARY</b></TableCell>
+                <TableCell><b>DIAGNOSA SECONDARY</b></TableCell>
                 <TableCell><b>RUANGAN</b></TableCell>
                 <TableCell></TableCell>
               </TableRow>

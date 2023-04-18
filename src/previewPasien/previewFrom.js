@@ -5,7 +5,6 @@ import { Text } from '@react-pdf/renderer';
 class PreviewFrom extends Component {
   render() {
     const { data } = this.props;
-    console.log('>>>', data);
     const person = data && data[0];
     return (
       <div style={{ border: '1px solid black' }}>
