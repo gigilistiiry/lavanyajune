@@ -3,13 +3,12 @@ import { getDatabase } from 'firebase/database';
 
 function StartFirebase() {
   const firebaseConfig = {
-    apiKey: "AIzaSyBoyIAjbShKisCtBxzqgyGEg-HZWf0xs1s",
-    authDomain: "operasi-7f49a.firebaseapp.com",
-    databaseURL: "https://operasi-7f49a-default-rtdb.firebaseio.com",
-    projectId: "operasi-7f49a",
-    storageBucket: "operasi-7f49a.appspot.com",
-    messagingSenderId: "373800333492",
-    appId: "1:373800333492:web:2b741f78d6e8e1ab38a7e1"
+    apiKey: "AIzaSyCalYbmu4E9JAtEEblrUVuHowQ_na2QBG4",
+    authDomain: "operasi-2d00c.firebaseapp.com",
+    projectId: "operasi-2d00c",
+    storageBucket: "operasi-2d00c.appspot.com",
+    messagingSenderId: "746590100080",
+    appId: "1:746590100080:web:8e1a6ef1efd2bf54cd72b5"
   };
 
   const app = initializeApp(firebaseConfig);

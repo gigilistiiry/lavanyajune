@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import StartFirebase from './configFirebase/index';
-import { ref, set, onValue, get, update, remove, child } from 'firebase/database';
+import { ref, set, onValue, remove } from 'firebase/database';
 import {
   Autocomplete, Box,
-  Button, CircularProgress, FormControl, FormControlLabel, FormLabel, Grid,
-  IconButton, InputAdornment, MenuItem, Modal, OutlinedInput, Pagination, Radio, RadioGroup,
+  Button, Card, CircularProgress, FormControl, FormControlLabel, FormLabel, Grid,
+  IconButton, InputAdornment, InputLabel, MenuItem, Modal, OutlinedInput, Radio, RadioGroup,
   Table, TableBody, TableCell, TableContainer, TableHead,
   TableRow, TextField, Typography
 } from '@mui/material';
@@ -13,17 +13,10 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { Cancel, CheckCircle, Close, Delete, FormatListBulleted, Grading, Help, Menu, PersonAddAlt, Search } from '@mui/icons-material';
+import { Cancel, CheckCircle, Close, Delete, FormatListBulleted, Help, Logout, Menu, PersonAddAlt, Print, Search, Visibility, VisibilityOff } from '@mui/icons-material';
 import moment from 'moment';
 import PreviewFrom from './previewPasien/previewFrom';
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  PDFViewer,
-} from "@react-pdf/renderer";
+import { Document, Page, View, PDFViewer } from "@react-pdf/renderer";
 
 const db = StartFirebase();
 
@@ -130,7 +123,13 @@ class Form extends Component {
     search: '',
     preliminaryData: [],
     showPreview: false,
-    idData: ''
+    idData: '',
+    isLogin: false,
+    nama: '',
+    password: '',
+    showPassword: false,
+    errorLogin: false,
+    valLogin: localStorage.getItem('login')
   }
 
   componentDidMount() {
@@ -140,6 +139,7 @@ class Form extends Component {
     const dbRef = ref(db, 'pasien')
     this.setState({
       database: StartFirebase(),
+      // valLogin: localStorage.getItem('login')
     })
     onValue(dbRef, (snapshot) => {
       let records = [];
@@ -150,6 +150,16 @@ class Form extends Component {
       this.setState({ dataTable: records, preliminaryData: records })
     })
   }
+
+  // componentDidUpdate(prevState) {
+  //   if (prevState.valLogin !== localStorage.getItem('login')) {
+  //     this._handleFillLogin();
+  //   }
+  // }
+
+  // _handleFillLogin = () => {
+  //   this.setState({ valLogin: localStorage.getItem('login') })
+  // }
 
   _handleChangeSearch = (e) => {
     e.preventDefault();
@@ -166,6 +176,17 @@ class Form extends Component {
     }
     );
     this.setState({ dataTable: searchPatient });
+  }
+
+  _handleLogin = () => {
+    const { nama, password } = this.state;
+    if (nama === 'acatanty' && password === 'acatanty') {
+      this.setState({ isLogin: true });
+      localStorage.setItem('login', true);
+      window.location.reload();
+    } else {
+      this.setState({ errorLogin: true })
+    }
   }
 
   _handleFilldataDxPrimary = async () => {
@@ -271,6 +292,10 @@ class Form extends Component {
     this.setState({ dxPascaBedah: val });
   }
 
+  _handleClickShowPassword = () => {
+    this.setState({ showPassword: !this.state.showPassword })
+  }
+
   _changeValPraBedah = (e) => {
     this.setState({ dxPraBedah: e.target.value }, () => this._handleFilldataDxPrimary());
   }
@@ -342,6 +367,10 @@ class Form extends Component {
     }
   }
 
+  _handleChangeLogin = (e) => {
+    this.setState({ [e.target.name]: e.target.value, errorLogin: false })
+  }
+
   _handleChangeJamAkhir = (category) => {
     if (category === 'Invalid date') {
       this.setState({ jamAkhir: '' })
@@ -390,6 +419,10 @@ class Form extends Component {
         },
         laporanOperasi: '',
       });
+    } else if (type === 'logout') {
+      this.setState({ isLogin: false });
+      localStorage.removeItem('login');
+      window.location.reload();
     } else {
       this.setState({
         menuAddPatient: false,
@@ -732,6 +765,9 @@ class Form extends Component {
           <div onClick={this._handleContent('addPatient')}>
             <PersonAddAlt /> Tambah Pasien
           </div>
+          <div style={{ position: 'absolute', bottom: '20px' }} onClick={this._handleContent('logout')}>
+            <Logout /> Logout
+          </div>
         </nav>
       </div>
     );
@@ -837,7 +873,7 @@ class Form extends Component {
                     <TableCell>{val?.ruangan}</TableCell>
                     <TableCell>
                       <div style={{ display: 'flex' }}>
-                        <IconButton onClick={this._handleShowHTML(val?.noRM)}><Grading /></IconButton>
+                        <IconButton onClick={this._handleShowHTML(val?.noRM)}><Print /></IconButton>
                         <IconButton onClick={this._handleDelete(val?.noRM)}><Delete /></IconButton>
                       </div>
                     </TableCell>
@@ -957,8 +993,95 @@ class Form extends Component {
     );
   }
 
+  _renderLogin = () => {
+    const { showPassword, errorLogin } = this.state;
+    return (
+      <div style={{
+        backgroundColor: '#dfe8ed',
+        margin: '-30px',
+        height: '100vh'
+      }}
+      >
+        <Card sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '800px',
+          height: 500,
+        }}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <div className='img-login' />
+            </Grid>
+            <Grid item xs={6} style={{ marginTop: '40px', paddingLeft: '30px' }}>
+              <div>
+                <h1>Login</h1>
+                <p>Silahkan login untuk masuk ke pendaftaran pasien Operasi</p>
+              </div>
+              <TextField
+                error={errorLogin}
+                style={{ width: '360px', marginTop: '20px' }}
+                label='Username'
+                name='nama'
+                onChange={this._handleChangeLogin}
+              />
+              <FormControl sx={{ width: '360px', marginTop: '20px' }} variant="outlined">
+                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                <OutlinedInput
+                  error={errorLogin}
+                  id="outlined-adornment-password"
+                  type={showPassword ? 'text' : 'password'}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={this._handleClickShowPassword}
+                        onMouseDown={this._handleClickShowPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                  name='password'
+                  onChange={this._handleChangeLogin}
+                />
+              </FormControl>
+              {errorLogin &&
+                <div style={{ color: 'red' }}>Username dan Password tidak sesuai</div>
+              }
+              <Button
+                disabled={
+                  this.state.nama === '' ||
+                    this.state.password === '' ? true : false
+                }
+                variant='contained'
+                style={{ width: '360px', marginTop: '20px' }}
+                onClick={this._handleLogin}
+              >
+                Login
+              </Button>
+            </Grid>
+          </Grid>
+        </Card>
+      </div>
+    );
+  }
+
   render() {
-    const { menuListPatien } = this.state;
+    const { menuListPatien, valLogin } = this.state;
+    let content;
+    if (valLogin) {
+      if (menuListPatien) {
+        content = this._renderMenuListPatient();
+      } else {
+        content = this._renderMenuAddPatient()
+      }
+    } else {
+      content = this._renderLogin();
+    }
     return (
       <React.Fragment>
         {this._renderMenu()}
@@ -966,7 +1089,7 @@ class Form extends Component {
           {this._renderModalForm()}
           {this._renderModalSubmit()}
           {this._renderModalDelete()}
-          {menuListPatien ? this._renderMenuListPatient() : this._renderMenuAddPatient()}
+          {content}
         </div>
       </React.Fragment>
     );
