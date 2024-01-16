@@ -8,7 +8,7 @@ class Home extends Component {
           position: 'relative',
           padding: 20
         }}>
-          <h2>JAVANYAJUNE</h2>
+          <h2>LAVANYAJUNE</h2>
           <img alt='' src={monkey} style={{
             width: '150px',
             position: 'absolute',
