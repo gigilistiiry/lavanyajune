@@ -9,7 +9,7 @@ class Home extends Component {
           padding: 20
         }}>
           <h2>JAVANYAJUNE</h2>
-          <img src={monkey} style={{
+          <img alt='' src={monkey} style={{
             width: '150px',
             position: 'absolute',
             top: 0,
