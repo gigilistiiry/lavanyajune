@@ -9,10 +9,10 @@ import { data } from '../Data';
 
 export default function ImgMediaCard() {
   return (
-    <Paper elevation={9} sx={{ padding: 2, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+    <Paper elevation={9} sx={{ padding: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
       {data?.map((val, idx) => {
         return (
-          <Card sx={{ maxWidth: 345, margin: 1 }} key={idx}>
+          <Card sx={{ maxWidth: 345, margin: 1, padding: 0 }} key={idx}>
             <CardMedia
               component="img"
               alt="green iguana"
