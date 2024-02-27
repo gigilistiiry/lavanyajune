@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import monkey from '../src/assets/monkey.png';
-import NavBar from './components/NavBar/NavBar';
-import ImgMediaCard from './components/Cards';
 class Home extends Component {
   render() {
     return (
