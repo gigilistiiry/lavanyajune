@@ -1,0 +1,30 @@
+*::after,
+*::before,
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.dark-theme {
+  --color-primary: #e41358;
+  --color-bg: #282c35;
+  --color-font: #fff;
+    --color-caption: whitesmoke;
+
+}
+.light-theme {
+  --color-primary: #e95184;
+  --color-bg: #fff;
+  --color-font: #232323;
+    --color-caption: #4d4d4d;
+
+}
+
+html {
+  font-size: 62.5%;
+}
+body {
+  margin: 0;
+  padding: 0;
+  background-color:  var(--color-bg) !important;
+}
