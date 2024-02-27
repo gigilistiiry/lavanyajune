@@ -19,8 +19,7 @@ class Home extends Component {
             right: 0
             }}/>
         </div> */}
-        <h1>GAK ADA APA-APA :)</h1>
-        <h3>hahahahaha</h3>
+        <h1>EMANG BOLEH SE BERHARAP INI?</h1>
       </div>
     )
   }
